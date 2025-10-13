@@ -6,15 +6,28 @@ services:
       dockerfile: dockerfiles/app.dockerfile
     container_name: php_app
     volumes:
-      - ./src:/var/www/html
+      - .:/var/www/html
     ports:
-      - "8000:80"
+      - "9000"
     depends_on:
       - db
       - mailhog
     environment:
       - MAILHOG_HOST=mailhog
       - MAILHOG_PORT=1025
+    networks:
+      - app-network
+    
+  web:
+    image: nginx:alpine
+    container_name: nginx_symfony
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./dockerfiles:/etc/nginx/conf.d
+    depends_on:
+      - php
     networks:
       - app-network
 

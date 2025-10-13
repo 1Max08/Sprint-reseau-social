@@ -1,13 +1,18 @@
-FROM php:8.2-apache
+FROM php:8.3-fpm
 
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+WORKDIR /var/www/html
 
-RUN a2enmod rewrite
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql zip
 
-COPY src/ /var/www/html/
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN chown -R www-data:www-data /var/www/html
 
-EXPOSE 80
+EXPOSE 9000
 
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
