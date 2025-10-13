@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: dockerfiles/app.dockerfile
+    container_name: php_app
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+      - mailhog
+    environment:
+      - MAILHOG_HOST=mailhog
+      - MAILHOG_PORT=1025
+
+  db:
+    image: mysql:8.3
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "8070:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpass
+    ports:
+      - "8060:80"
+    depends_on:
+      - db
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+    - "8050:8025"
+    - "8040:1025"
+
+netwworks:
+  app_network:
+    driver: bridge
+
+volumes:
+  db_data:
