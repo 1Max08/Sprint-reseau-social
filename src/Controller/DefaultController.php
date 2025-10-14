@@ -15,7 +15,9 @@ class DefaultController extends AbstractController
     public function home( ): Response
     {
         //$user = $security->getUser();
-
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_register');
+        }
         return $this->render('default/home.html.twig', [
             //'messages' => $messages,
         ]);
