@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/.idea/sprint.iml" filepath="$PROJECT_DIR$/.idea/sprint.iml" />
+=======
       <module fileurl="file://$PROJECT_DIR$/.idea/Sprint.iml" filepath="$PROJECT_DIR$/.idea/Sprint.iml" />
+>>>>>>> 958e80e6744aae67bea9f36ebdd8044bf3c70c09
     </modules>
   </component>
 </project>
