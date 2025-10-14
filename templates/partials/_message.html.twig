@@ -1,0 +1,23 @@
+<div class="col-md-4 col-sm-6">
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ message.content }} - {{ book.genre }}</h5>
+                        <small class="text-muted">
+                            {% if app.user %}
+                            Rédigé par : {{ message.author }} -
+                            {% endif %}
+                            le {{ message.createdAt | date('d/m/Y') }}
+                        </small>
+                        <a href="{{ path('messages_message') }}">
+                            Voir plus
+                        </a>
+
+                    </div>
+                </div>
+            </div> <!-- /.row -->
+        </div> <!-- /.container -->
+    </div> <!-- /.bg-light -->
+</div> <!-- /.col -->
