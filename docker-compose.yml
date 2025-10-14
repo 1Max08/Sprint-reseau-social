@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-version: "3.9"
-=======
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
 
 services:
   php:
@@ -10,22 +6,17 @@ services:
       dockerfile: dockerfiles/app.dockerfile
     container_name: php_app
     volumes:
-<<<<<<< HEAD
-      - ./src:/var/www/html
-    ports:
-      - "8080:80"
-=======
       - .:/var/www/html
     ports:
       - "9000"
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
     depends_on:
       - db
       - mailhog
     environment:
       - MAILHOG_HOST=mailhog
       - MAILHOG_PORT=1025
-<<<<<<< HEAD
+    networks:
+      - app-network
 
   db:
     image: mysql:8.3
@@ -39,10 +30,6 @@ services:
       - "8070:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin:latest
-=======
     networks:
       - app-network
     
@@ -74,38 +61,22 @@ services:
       - app-network
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
     container_name: phpmyadmin
     environment:
       PMA_HOST: db
       PMA_USER: root
-<<<<<<< HEAD
-      PMA_PASSWORD: rootpass
-=======
       PMA_PASSWORD: root
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
     ports:
       - "8060:80"
     depends_on:
       - db
-<<<<<<< HEAD
-=======
     networks:
       - app-network
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
 
   mailhog:
     image: mailhog/mailhog:latest
     container_name: mailhog
     ports:
-<<<<<<< HEAD
-    - "8050:8025"
-    - "8040:1025"
-
-
-volumes:
-  mysql_data:
-=======
     - "8025:8025"
     - "1025:1025"
     networks:
@@ -117,4 +88,3 @@ networks:
 
 volumes:
   db_data:
->>>>>>> 93e57c105b8d29858e014c6e103229adc06b88b0
