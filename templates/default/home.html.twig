@@ -3,20 +3,40 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <main>
-        <!-- Titre de la page -->
-        <div class="p-3 mx-auto text-center">
-            <h1 class="display-4">Mini reseau-social</h1>
-        </div>
+<main class="py-10">
+    <!-- Titre -->
+    <div class="p-6 mx-auto text-center">
+        <h1 class="text-5xl lg:text-6xl font-extrabold text-primaryBlue mb-4">
+            Mini Reseau-Social
+        </h1>
+        <p class="mt-2 text-gray-700 text-lg font-semibold">Bienvenue sur notre plateforme 💚💙</p>
+    </div>
 
-        <!-- Contenu de la page -->
-        <div class="py-5 bg-light">
-            <div class="container">
-                <div class="row">
-                    <h1>Bienvenue</h1>
-                    
+    <!-- Cartes -->
+    <div class="py-10">
+        <div class="container mx-auto px-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="bg-white rounded-xl shadow-md p-6 hover:scale-105 transition-transform duration-300 border-2 border-primaryGreen">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-primaryGreen flex items-center justify-center text-white font-bold">U</div>
+                    <h2 class="text-xl font-bold text-gray-900">Utilisateur 1</h2>
                 </div>
+                <p class="mt-4 text-gray-700">Un post simple et clair, style vert et bleu.</p>
+                <button class="mt-4 w-full py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
+                    Voir plus
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 hover:scale-105 transition-transform duration-300 border-2 border-primaryBlue">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-primaryBlue flex items-center justify-center text-white font-bold">U</div>
+                    <h2 class="text-xl font-bold text-gray-900">Utilisateur 2</h2>
+                </div>
+                <p class="mt-4 text-gray-700">Un autre post simple et moderne.</p>
+                <button class="mt-4 w-full py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
+                    Voir plus
+                </button>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 {% endblock %}
