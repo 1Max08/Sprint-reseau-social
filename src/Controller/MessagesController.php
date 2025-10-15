@@ -69,5 +69,42 @@ public function message(int $id, MessagesRepository $messagesRepository, Securit
         'message' => $message,
     ]);
 }
+    #[Route('/message/update/{id}', name: 'message_update', methods: ['GET', 'POST'])]
+    public function update(Request $request, Messages $message, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas la permission de modifier ce message.');
+        }
+
+        $form = $this->createForm(CreateMessageType::class, $message);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('messages_message', ['id' => $message->getId()]);
+        }
+
+        return $this->render('CRUD/message_update.html.twig', [
+            'form' => $form->createView(),
+            'message' => $message,
+        ]);
+    }
+     #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
+    public function delete(Messages $message, EntityManagerInterface $manager): Response
+    {
+        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
+        if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
+        }
+
+        $manager->remove($message);
+        $manager->flush();
+
+        $this->addFlash('success', 'Message supprimé avec succès.');
+
+        return $this->redirectToRoute('default_home');
+    }
+
 
 }
