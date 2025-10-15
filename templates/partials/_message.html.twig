@@ -11,7 +11,9 @@
                             {% endif %}
                             le {{ message.createdAt | date('d/m/Y') }}
                         </small>
-                        <a href="{{ path('messages_message', {'id': message.id}) }}">Voir le message</a>
+                        <a href="{{ path('messages_message', {'id': message.id}) }}">
+                        Voir plus
+                        </a>
 
                     </div>
                 </div>
