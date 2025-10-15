@@ -18,7 +18,16 @@
         Publié le {{ message.createdAt|date('d/m/Y à H:i') }}
     </p>
 
-        <hr class="my-6 border-gray-300">
+    <hr class="my-6 border-gray-300">
+
+    {# --- Flash messages --- #}
+    {% for label, messages in app.flashes %}
+        {% for flash in messages %}
+            <div class="p-4 mb-4 rounded-xl text-white {% if label == 'success' %}bg-green-500{% else %}bg-red-500{% endif %}">
+                {{ flash }}
+            </div>
+        {% endfor %}
+    {% endfor %}
 
     <h2 class="text-2xl font-semibold text-primaryBlue mb-4">Laisser un commentaire</h2>
 
@@ -32,15 +41,34 @@
         </button>
     </form>
 
+    {# --- Display comments --- #}
+    <h2 class="text-2xl font-semibold text-primaryBlue mb-4 mt-8">Commentaires</h2>
+
+    {% if message.comments|length > 0 %}
+        <div class="space-y-4">
+            {% for comment in message.comments %}
+                <div class="border border-gray-300 rounded-xl p-4 bg-gray-50">
+                    <p class="text-gray-800">{{ comment.content }}</p>
+                    <p class="text-sm text-gray-500">
+                        Par {{ comment.author.email }} le {{ comment.createdAt|date('d/m/Y à H:i') }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 italic">Aucun commentaire pour l’instant.</p>
+    {% endif %}
+
     <a href="{{ path('default_home') }}"
        class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
         ⬅ Retour à la liste
     </a>
+
     {% if is_granted('ROLE_ADMIN') or message.author == app.user %}
         <div class="mt-4">
             <a href="{{ path('message_update', {'id': message.id}) }}" class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">Modifier</a>
             <form action="{{ path('message_delete', {'id': message.id}) }}" method="post" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?');">
-            <button type="submit" class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">Supprimer</button>
+                <button type="submit" class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">Supprimer</button>
             </form>
         </div>
     {% endif %}

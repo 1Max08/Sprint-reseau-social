@@ -16,16 +16,19 @@ class Comment
     #[ORM\Column(type: 'text')]
     private ?string $content = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
+    private ?User $author = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?Messages $message = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $author = null;
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -40,31 +43,17 @@ class Comment
     public function setContent(string $content): static
     {
         $this->content = $content;
-
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getMessage(): ?Messages
-    {
-        return $this->message;
-    }
-
-    public function setMessage(?Messages $message): static
-    {
-        $this->message = $message;
-
         return $this;
     }
 
@@ -76,7 +65,17 @@ class Comment
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+        return $this;
+    }
 
+    public function getMessage(): ?Messages
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?Messages $message): static
+    {
+        $this->message = $message;
         return $this;
     }
 }
