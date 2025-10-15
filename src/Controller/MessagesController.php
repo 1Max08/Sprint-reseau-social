@@ -52,13 +52,22 @@ class MessagesController extends AbstractController
       ]);
   }
 
-    #[Route('/message', name: 'messages_message', methods: ['GET', 'POST'])]
-    public function message(MessagesRepository $messagesRepository, Security $security): Response
-    {
-       
-
-        return $this->render('default/home.html.twig', [
-           
-        ]);
+    #[Route('/message/{id}', name: 'messages_message', methods: ['GET'])]
+public function message(int $id, MessagesRepository $messagesRepository, Security $security): Response
+{
+    if (!$security->getUser()) {
+        return $this->redirectToRoute('app_register');
     }
+
+    $message = $messagesRepository->find($id);
+
+    if (!$message) {
+        throw $this->createNotFoundException('Message introuvable');
+    }
+
+    return $this->render('CRUD/message_detail.html.twig', [
+        'message' => $message,
+    ]);
+}
+
 }
