@@ -7,4 +7,6 @@ import './bootstrap.js';
  */
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+document.querySelector('#theme').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+});
