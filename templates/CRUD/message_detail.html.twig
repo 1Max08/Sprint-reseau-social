@@ -47,11 +47,21 @@
     {% if message.comments|length > 0 %}
         <div class="space-y-4">
             {% for comment in message.comments %}
-                <div class="border border-gray-300 rounded-xl p-4 bg-gray-50">
+                <div class="border border-gray-300 rounded-xl p-4 bg-gray-50 relative">
                     <p class="text-gray-800">{{ comment.content }}</p>
                     <p class="text-sm text-gray-500">
                         Par {{ comment.author.email }} le {{ comment.createdAt|date('d/m/Y à H:i') }}
                     </p>
+
+                    {% if is_granted('ROLE_ADMIN') or comment.author == app.user %}
+                        <div class="absolute top-2 right-2 space-x-2">
+                            <a href="{{ path('comment_edit', {'id': comment.id}) }}" class="text-blue-500 hover:underline">Modifier</a>
+
+                            <form action="{{ path('comment_delete', {'id': comment.id}) }}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                                <button type="submit" class="text-red-500 hover:underline bg-none border-none p-0">Supprimer</button>
+                            </form>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
