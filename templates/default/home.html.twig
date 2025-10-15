@@ -14,35 +14,11 @@
 
     <div class="py-10">
         <div class="container mx-auto px-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-<<<<<<< HEAD
-            <div class="bg-white rounded-xl shadow-md p-6 hover:scale-105 transition-transform duration-300 border-2 border-primaryGreen">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-full bg-primaryGreen flex items-center justify-center text-white font-bold">U</div>
-                    <h2 class="text-xl font-bold dark:text-white text-gray-900">Utilisateur 1</h2>
-                </div>
-                <p class="mt-4 dark:text-white text-gray-700">Un post simple et clair, style vert et bleu.</p>
-                <button class="mt-4 w-full py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
-                    Voir plus
-                </button>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-md p-6 hover:scale-105 transition-transform duration-300 border-2 border-primaryBlue">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-full bg-primaryBlue flex items-center justify-center text-white font-bold">U</div>
-                    <h2 class="text-xl font-bold dark:text-white text-gray-900">Utilisateur 2</h2>
-                </div>
-                <p class="mt-4 dark:text-white text-gray-700">Un autre post simple et moderne.</p>
-                <a href="{{ path('messages_message') }}" class="mt-4 w-full py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
-                    Voir plus
-                </a>
-            </div>
-=======
             {% for message in messages %}
                 {% include 'partials/_message.html.twig' with {'message': message} %}
             {% else %}
                 <p>Aucun message trouvé.</p>
             {% endfor %} 
->>>>>>> f455023b55e50fb4e7bd930ae53f1c75fa33d223
         </div>
     </div>
 </main>
