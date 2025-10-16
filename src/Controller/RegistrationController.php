@@ -23,6 +23,9 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $roles = $form->has('roles') ? $form->get('roles')->getData() : ['ROLE_USER'];
+            $user->setRoles($roles);
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 

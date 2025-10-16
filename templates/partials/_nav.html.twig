@@ -31,6 +31,9 @@
                 <a href="{{ path('app_register') }}" class="text-white hover:text-primaryGreen font-semibold transition">Inscription</a>
                 <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold transition">Connexion</a>
             {% endif %}
+            {% if is_granted('ROLE_ADMIN')%}
+                <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
+            {% endif %}
 
         </div>
     </div>
@@ -45,6 +48,9 @@
         {% else %}
             <a href="{{ path('app_register') }}" class="text-white hover:text-primaryGreen font-semibold">Inscription</a>
             <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold">Connexion</a>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN')%}
+            <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
         {% endif %}
     </div>
 </nav>
