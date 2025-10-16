@@ -17,6 +17,21 @@ services:
       - MAILHOG_PORT=1025
     networks:
       - app-network
+
+  db:
+    image: mysql:8.3
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "8070:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
     
   web:
     image: nginx:alpine
@@ -31,19 +46,6 @@ services:
     networks:
       - app-network
 
-  db:
-    image: mysql:8.0
-    container_name: mysql_db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: myapp
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - app-network
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
