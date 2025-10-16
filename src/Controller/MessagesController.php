@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Messages;
+use App\Entity\Comment;
 use App\Form\CreateMessageType;
 use App\Repository\MessagesRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -16,58 +16,55 @@ use App\Service\Mail;
 
 class MessagesController extends AbstractController
 {
+    #[Route('/createmessage', name: 'messages_create')]
+    public function create(
+        Request $request,
+        EntityManagerInterface $manager,
+        Mail $mail
+    ): Response {
+        $message = new Messages();
+        $message->setAuthor($this->getUser());
 
-#[Route('/createmessage', name: 'messages_create')]
+        $form = $this->createForm(CreateMessageType::class, $message);
+        $form->handleRequest($request);
 
-public function create(
-    Request $request, 
-    EntityManagerInterface $manager, 
-    Mail $mail
-): Response
-{
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion de l'image
+            $imageFile = $form->get('image')->getData();
 
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
+                $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
 
-    $message = new Messages();
-    $message->setAuthor($this->getUser());
+                $imageFile->move(
+                    $this->getParameter('images_directory'),
+                    $newFilename
+                );
 
-    $form = $this->createForm(CreateMessageType::class, $message);
-    $form->handleRequest($request);
+                $message->setImage('uploads/images/' . $newFilename);
+            } else {
+                // Image par défaut si aucune n'est uploadée
+                $message->setImage('uploads/images/image-default.jpg');
+            }
 
-    if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($message);
+            $manager->flush();
 
-        // Handle image upload
-        $imageFile = $form->get('image')->getData();
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
-            $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
+            // Envoi d’une notification (si le service Mail existe)
+            if (class_exists(Mail::class)) {
+                $mail->notifyNewMessage($message);
+            }
 
-            $imageFile->move(
-                $this->getParameter('images_directory'),
-                $newFilename
-            );
+            $this->addFlash('success', 'Message publié avec succès.');
 
-            $message->setImage('uploads/images/' . $newFilename);
+            return $this->redirectToRoute('default_home');
         }
 
-        // Save the message
-        $manager->persist($message);
-        $manager->flush();
-
-        // Send notifications via Mail.php
-        $mail->notifyNewMessage($message);
-
-        $this->addFlash('success', 'Message publié et notifications envoyées.');
-
-        return $this->redirectToRoute('default_home');
+        return $this->render('CRUD/createmessage.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
-
-    return $this->render('CRUD/createmessage.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
-
-
 
     #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
     public function message(
@@ -76,8 +73,7 @@ public function create(
         Security $security,
         Request $request,
         EntityManagerInterface $entityManager
-    ): Response
-    {
+    ): Response {
         if (!$security->getUser()) {
             return $this->redirectToRoute('app_register');
         }
@@ -91,7 +87,7 @@ public function create(
             $content = trim($request->request->get('comment'));
 
             if ($content) {
-                $comment = new \App\Entity\Comment();
+                $comment = new Comment();
                 $comment->setContent($content);
                 $comment->setAuthor($this->getUser());
                 $comment->setMessage($message);
@@ -122,6 +118,8 @@ public function create(
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $this->addFlash('success', 'Message mis à jour avec succès.');
             return $this->redirectToRoute('messages_message', ['id' => $message->getId()]);
         }
 
@@ -142,7 +140,6 @@ public function create(
         $manager->flush();
 
         $this->addFlash('success', 'Message supprimé avec succès.');
-
         return $this->redirectToRoute('default_home');
     }
 }

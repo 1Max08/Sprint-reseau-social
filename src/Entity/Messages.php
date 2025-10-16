@@ -27,7 +27,7 @@ class Messages
     private ?User $author = null;
 
     #[ORM\OneToMany(mappedBy: 'message', targetEntity: Comment::class, cascade: ['remove'], orphanRemoval: true)]
-    private Collection $comments;
+    private Collection $comment;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -38,9 +38,8 @@ class Messages
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->comments = new ArrayCollection();
+        $this->comment = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -105,15 +104,15 @@ class Messages
     /**
      * @return Collection<int, Comment>
      */
-    public function getComments(): Collection
+    public function getComment(): Collection
     {
-        return $this->comments;
+        return $this->comment;
     }
 
     public function addComment(Comment $comment): static
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
+        if (!$this->comment->contains($comment)) {
+            $this->comment->add($comment);
             $comment->setMessage($this);
         }
 
@@ -122,7 +121,7 @@ class Messages
 
     public function removeComment(Comment $comment): static
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->comment->removeElement($comment)) {
             if ($comment->getMessage() === $this) {
                 $comment->setMessage(null);
             }
