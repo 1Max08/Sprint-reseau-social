@@ -12,20 +12,21 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use App\Service\Mail;
 
 class MessagesController extends AbstractController
 {
 
 #[Route('/createmessage', name: 'messages_create')]
+
 public function create(
     Request $request, 
     EntityManagerInterface $manager, 
-    MailerInterface $mailer, 
-    UserRepository $userRepository
+    Mail $mail
 ): Response
 {
+
+
     $message = new Messages();
     $message->setAuthor($this->getUser());
 
@@ -49,43 +50,12 @@ public function create(
             $message->setImage('uploads/images/' . $newFilename);
         }
 
+        // Save the message
         $manager->persist($message);
         $manager->flush();
 
-        // Send email to all users
-        $users = $userRepository->findAll();
-        foreach ($users as $user) {
-            $userEmail = $user->getEmail();
-            if (!$userEmail) {
-                error_log('Skipping user ID '.$user->getId().' – no email.');
-                continue;
-            }
-
-            $email = (new Email())
-                ->from('no-reply@example.com')
-                ->to($userEmail)
-                ->subject('Nouveau message publié sur le site');
-
-            // Try rendering Twig template, fallback to simple HTML if it fails
-            try {
-                $email->html(
-                    $this->renderView('email/emails.html.twig', [
-                        'message' => $message,
-                        'user' => $user
-                    ])
-                );
-            } catch (\Exception $e) {
-                error_log('Twig rendering failed for user '.$user->getId().': '.$e->getMessage());
-                $email->html('<h2>Nouveau message publié</h2><p>Un nouveau message a été publié sur le site.</p>');
-            }
-
-            // Send the email safely
-            try {
-                $mailer->send($email);
-            } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-                error_log('Mailer failed for user '.$user->getId().': '.$e->getMessage());
-            }
-        }
+        // Send notifications via Mail.php
+        $mail->notifyNewMessage($message);
 
         $this->addFlash('success', 'Message publié et notifications envoyées.');
 
@@ -96,6 +66,7 @@ public function create(
         'form' => $form->createView(),
     ]);
 }
+
 
 
     #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
