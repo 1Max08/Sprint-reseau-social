@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Messages;
+use App\Entity\Comment;
 use App\Form\CreateMessageType;
 use App\Repository\MessagesRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,90 +12,99 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\Mail;
 
 class MessagesController extends AbstractController
 {
-
     #[Route('/createmessage', name: 'messages_create')]
-public function create(Request $request, EntityManagerInterface $manager): Response
-{
-    $message = new Messages();
-    $message->setAuthor($this->getUser());
+    public function create(
+        Request $request,
+        EntityManagerInterface $manager,
+        Mail $mail
+    ): Response {
+        $message = new Messages();
+        $message->setAuthor($this->getUser());
 
-    $form = $this->createForm(CreateMessageType::class, $message);
-    $form->handleRequest($request);
+        $form = $this->createForm(CreateMessageType::class, $message);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion de l'image
+            $imageFile = $form->get('image')->getData();
 
-        $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
+                $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
 
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
-            $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
+                $imageFile->move(
+                    $this->getParameter('images_directory'),
+                    $newFilename
+                );
 
-            $imageFile->move(
-                $this->getParameter('images_directory'),
-                $newFilename
-            );
-              $message->setImage('uploads/images/' . $newFilename);
-          }else {
-            // Pas d'image uploadée => image par défaut
-              $message->setImage('uploads/images/image-default.jpg');
+                $message->setImage('uploads/images/' . $newFilename);
+            } else {
+                // Image par défaut si aucune n'est uploadée
+                $message->setImage('uploads/images/image-default.jpg');
+            }
 
+            $manager->persist($message);
+            $manager->flush();
+
+            // Envoi d’une notification (si le service Mail existe)
+            if (class_exists(Mail::class)) {
+                $mail->notifyNewMessage($message);
+            }
+
+            $this->addFlash('success', 'Message publié avec succès.');
+
+            return $this->redirectToRoute('default_home');
         }
 
-        $manager->persist($message);
-        $manager->flush();
-
-        return $this->redirectToRoute('default_home');
+        return $this->render('CRUD/createmessage.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
-    return $this->render('CRUD/createmessage.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
-
-  #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
-  public function message(
-    int $id,
-    MessagesRepository $messagesRepository,
-    Security $security,
-    Request $request,
-    EntityManagerInterface $entityManager
-    ): Response
-    {
+    #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
+    public function message(
+        int $id,
+        MessagesRepository $messagesRepository,
+        Security $security,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
         if (!$security->getUser()) {
             return $this->redirectToRoute('app_register');
         }
+
         $message = $messagesRepository->find($id);
         if (!$message) {
             throw $this->createNotFoundException('Message introuvable');
         }
-        
+
         if ($request->isMethod('POST')) {
             $content = trim($request->request->get('comment'));
-            
+
             if ($content) {
-                $comment = new \App\Entity\Comment();
+                $comment = new Comment();
                 $comment->setContent($content);
                 $comment->setAuthor($this->getUser());
                 $comment->setMessage($message);
                 $entityManager->persist($comment);
                 $entityManager->flush();
-                
+
                 $this->addFlash('success', 'Commentaire publié avec succès.');
                 return $this->redirectToRoute('messages_message', ['id' => $id]);
-            }
-            else {
+            } else {
                 $this->addFlash('error', 'Le commentaire ne peut pas être vide.');
             }
         }
 
-    return $this->render('CRUD/message_detail.html.twig', [
-        'message' => $message,
-    ]);
-}
+        return $this->render('CRUD/message_detail.html.twig', [
+            'message' => $message,
+        ]);
+    }
 
     #[Route('/message/update/{id}', name: 'message_update', methods: ['GET', 'POST'])]
     public function update(Request $request, Messages $message, EntityManagerInterface $entityManager): Response
@@ -109,6 +119,7 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->addFlash('success', 'Message mis à jour avec succès.');
             return $this->redirectToRoute('messages_message', ['id' => $message->getId()]);
         }
 
@@ -117,10 +128,10 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
             'message' => $message,
         ]);
     }
+
     #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
     public function delete(Messages $message, EntityManagerInterface $manager): Response
     {
-        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
         if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }
@@ -129,9 +140,6 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
         $manager->flush();
 
         $this->addFlash('success', 'Message supprimé avec succès.');
-
         return $this->redirectToRoute('default_home');
     }
-
-
 }

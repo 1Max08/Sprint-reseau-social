@@ -38,9 +38,8 @@ class Messages
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->comments = new ArrayCollection();
+        $this->comment = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -112,8 +111,8 @@ class Messages
 
     public function addComment(Comment $comment): static
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
+        if (!$this->comment->contains($comment)) {
+            $this->comment->add($comment);
             $comment->setMessage($this);
         }
 
