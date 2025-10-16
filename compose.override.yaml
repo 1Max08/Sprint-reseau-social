@@ -1,0 +1,9 @@
+
+###services:
+###> doctrine/doctrine-bundle ###
+ 
+###< doctrine/doctrine-bundle ###
+
+###> symfony/mailer ###
+
+###< symfony/mailer ###
