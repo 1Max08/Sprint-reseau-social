@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Form\CommentType;
+use App\Service\Mail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,45 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends AbstractController
 {
+    #[Route('/comment/create/{messageId}', name: 'comment_create', methods: ['POST'])]
+    public function create(
+        int $messageId,
+        Request $request,
+        EntityManagerInterface $manager,
+        Mail $mail
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $content = trim($request->request->get('comment'));
+        if (!$content) {
+            $this->addFlash('error', 'Le commentaire ne peut pas être vide.');
+            return $this->redirectToRoute('messages_message', ['id' => $messageId]);
+        }
+
+        $message = $manager->getRepository(\App\Entity\Messages::class)->find($messageId);
+        if (!$message) {
+            throw $this->createNotFoundException('Message introuvable.');
+        }
+
+        $comment = new Comment();
+        $comment->setContent($content);
+        $comment->setAuthor($user);
+        $comment->setMessage($message);
+
+        $manager->persist($comment);
+        $manager->flush();
+
+        // 🔔 Send email notification
+        $mail->notifyNewComment($comment);
+
+        $this->addFlash('success', 'Commentaire publié avec succès et notification envoyée.');
+
+        return $this->redirectToRoute('messages_message', ['id' => $messageId]);
+    }
+
     #[Route('/comment/edit/{id}', name: 'comment_edit', methods: ['GET', 'POST'])]
     public function edit(Comment $comment, Request $request, EntityManagerInterface $manager): Response
     {
