@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un utilisateur{% endblock %}
+
+{% block body %}
+<div class="max-w-lg mx-auto mt-12 bg-white rounded-2xl shadow-md border-2 border-primaryBlue p-8">
+    <h1 class="text-3xl font-bold text-primaryBlue mb-6 text-center">
+         Modifier l’utilisateur
+    </h1>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+        <div>
+            {{ form_label(form.email, 'Adresse e-mail', {'label_attr': {'class': 'block text-gray-900 font-bold mb-1'}}) }}
+            {{ form_widget(form.email, {'attr': {'class': 'w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-primaryBlue focus:border-transparent bg-white text-gray-900'}}) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div>
+            {{ form_label(form.roles, 'Rôles', {'label_attr': {'class': 'block text-gray-900 font-bold mb-1'}}) }}
+            {{ form_widget(form.roles, {'attr': {'class': 'w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-primaryBlue focus:border-transparent bg-white text-gray-900'}}) }}
+            {{ form_errors(form.roles) }}
+        </div>
+
+        <!-- Champ Mot de passe -->
+        <div>
+            {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'block text-gray-900 font-bold mb-1'}}) }}
+            {{ form_widget(form.password, {
+                'attr': {
+                    'class': 'w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-primaryBlue focus:border-transparent bg-white text-gray-900'
+                }
+            }) }}
+            {{ form_errors(form.password) }}
+        </div>
+
+        <div class="flex justify-between items-center pt-4">
+            <a href="{{ path('admin_users') }}" 
+               class="inline-block py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-xl hover:bg-gray-300 transition">
+                 Retour
+            </a>
+
+            <button type="submit" 
+                    class="py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
+                 Enregistrer
+            </button>
+        </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+

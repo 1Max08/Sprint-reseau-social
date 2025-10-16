@@ -28,6 +28,9 @@
                 <a href="{{ path('app_register') }}" class="text-white hover:text-primaryGreen font-semibold transition">Inscription</a>
                 <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold transition">Connexion</a>
             {% endif %}
+            {% if is_granted('ROLE_ADMIN')%}
+                <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
+            {% endif %}
 
             <button id="theme"
                     class="bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-1 rounded text-xs">
@@ -46,6 +49,9 @@
         {% else %}
             <a href="{{ path('app_register') }}" class="text-white hover:text-primaryGreen font-semibold">Inscription</a>
             <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold">Connexion</a>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN')%}
+            <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
         {% endif %}
 
         <button id="theme"
