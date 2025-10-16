@@ -8,11 +8,8 @@ import './bootstrap.js';
 import './styles/app.css';
 
 /* Dark mode */
-document.querySelectorAll('#theme-pc, #theme-mobile').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.querySelector('#theme').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
-        location.reload();
-    });
 });
 /*Menu burger*/
 const menuBtn = document.getElementById('menu-btn');
