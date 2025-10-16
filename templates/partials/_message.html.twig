@@ -1,26 +1,26 @@
 <div class="col-md-4 col-sm-6">
-    <div class="py-5 bg-light">
+    <div class="py-5 bg-gray-100 dark:bg-darkBg">
         <div class="container">
             <div class="row">
-                <div class="card">
-                    <div class="card-body dark:text-white">
+                <div class="bg-white dark:bg-darkBg rounded-2xl shadow-md border border-gray-300 dark:border-gray-700 p-6">
+                    <div class="dark:text-gray-200">
                         {% if message.image %}
-                            <img src="{{ asset(message.image) }}" alt="Image du message" class="rounded-xl shadow mb-4">
+                            <img src="{{ asset(message.image) }}" alt="Image du message" class="rounded-xl shadow mb-4 w-full object-cover">
                         {% endif %}
-                        <h5 class="card-title">{{ message.content }}</h5>
-                        <small class="text-muted">
+                        <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ message.content }}</h5>
+                        <small class="text-gray-500 dark:text-gray-400 block mb-4">
                             {% if app.user %}
-                            Rédigé par : {{ message.author.email }} -
+                                Rédigé par : {{ message.author.email }} -
                             {% endif %}
                             le {{ message.createdAt | date('d/m/Y') }}
                         </small>
-                        <a href="{{ path('messages_message', {'id': message.id}) }}" class="mt-4 w-full block text-center py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
+                        <a href="{{ path('messages_message', {'id': message.id}) }}" 
+                           class="mt-4 w-full block text-center py-2 bg-primaryBlue dark:bg-primaryGreen text-white font-bold rounded-xl shadow-md hover:opacity-90 transition">
                             Voir plus
                         </a>
-
                     </div>
                 </div>
             </div> 
         </div> 
     </div> 
-</div> 
+</div>
