@@ -3,19 +3,20 @@
 {% block title %}Gestion des utilisateurs{% endblock %}
 
 {% block body %}
-<div class="max-w-5xl mx-auto mt-10 bg-white rounded-2xl shadow p-6 border-2 border-primaryBlue">
+<div class="max-w-5xl mx-auto mt-10 p-6 bg-white dark:bg-darkBg rounded-2xl shadow-md border-2 border-primaryBlue dark:border-primaryGreen">
+
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-primaryBlue">
+        <h1 class="text-3xl font-bold text-primaryBlue dark:text-primaryGreen">
             Gestion des utilisateurs
         </h1>
 
         <a href="{{ path('admin_user_create') }}" 
-           class="py-2 px-4 bg-primaryGreen text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition">
+           class="py-2 px-4 bg-primaryGreen dark:bg-primaryBlue text-white font-semibold rounded-xl shadow-md hover:opacity-90 transition">
              Créer un utilisateur
         </a>
     </div>
 
-    <table class="min-w-full bg-white border border-gray-200 rounded-xl shadow">
+    <table class="min-w-full bg-white dark:bg-darkBg border border-gray-200 dark:border-gray-700 rounded-xl shadow">
         <thead class="bg-primaryBlue text-white">
             <tr>
                 <th class="py-3 px-4 text-left">ID</th>
@@ -26,17 +27,17 @@
         </thead>
         <tbody>
         {% for user in users %}
-            <tr class="border-b hover:bg-gray-50 transition">
-                <td class="py-3 px-4">{{ user.id }}</td>
-                <td class="py-3 px-4">{{ user.email }}</td>
+            <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                <td class="py-3 px-4 text-gray-900 dark:text-gray-200">{{ user.id }}</td>
+                <td class="py-3 px-4 text-gray-900 dark:text-gray-200">{{ user.email }}</td>
                 <td class="py-3 px-4">
                     {% for role in user.roles %}
-                        <span class="inline-block bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">{{ role }}</span>
+                        <span class="inline-block bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 px-2 py-1 rounded text-xs font-semibold">{{ role }}</span>
                     {% endfor %}
                 </td>
                 <td class="py-3 px-4 text-center space-x-2">
                     <a href="{{ path('admin_user_edit', {'id': user.id}) }}" 
-                       class="text-blue-600 hover:underline font-semibold">
+                       class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
                         Modifier
                     </a>
                     <form method="post" 
@@ -44,13 +45,13 @@
                           class="inline"
                           onsubmit="return confirm('Supprimer cet utilisateur ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                        <button class="text-red-600 hover:underline font-semibold">Supprimer</button>
+                        <button class="text-red-600 dark:text-red-400 hover:underline font-semibold">Supprimer</button>
                     </form>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="text-center py-4 text-gray-500">
+                <td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">
                     Aucun utilisateur trouvé
                 </td>
             </tr>

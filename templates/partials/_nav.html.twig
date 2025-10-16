@@ -4,6 +4,9 @@
         <a href="{{ path('default_home') }}" class="text-white font-bold text-xl">
             Mini Réseau-Social
         </a>
+        <button id="theme" class="bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-1 rounded text-xs">
+        🌗
+        </button>
 
         <!-- Bouton burger -->
         <button id="menu-btn"
@@ -32,10 +35,6 @@
                 <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
             {% endif %}
 
-            <button id="theme"
-                    class="bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-1 rounded text-xs">
-                🌗
-            </button>
         </div>
     </div>
 
@@ -53,10 +52,5 @@
         {% if is_granted('ROLE_ADMIN')%}
             <a href="{{ path('admin_users') }}" class="text-white hover:text-primaryGreen font-semibold">Gérer les users</a>
         {% endif %}
-
-        <button id="theme"
-                class="bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded text-sm">
-            🌗
-        </button>
     </div>
 </nav>

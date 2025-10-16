@@ -16,44 +16,44 @@ class MessagesController extends AbstractController
 {
 
     #[Route('/createmessage', name: 'messages_create')]
-  public function create(Request $request, EntityManagerInterface $manager): Response
-  {
-      $message = new Messages();
-      $message->setAuthor($this->getUser());
+public function create(Request $request, EntityManagerInterface $manager): Response
+{
+    $message = new Messages();
+    $message->setAuthor($this->getUser());
 
-      $form = $this->createForm(CreateMessageType::class, $message);
-      $form->handleRequest($request);
+    $form = $this->createForm(CreateMessageType::class, $message);
+    $form->handleRequest($request);
 
-      if ($form->isSubmitted() && $form->isValid()) {
+    if ($form->isSubmitted() && $form->isValid()) {
 
-          $imageFile = $form->get('image')->getData();
+        $imageFile = $form->get('image')->getData();
 
-          if ($imageFile) {
-              $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-              $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
-              $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
+            $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
 
-              $imageFile->move(
-                  $this->getParameter('images_directory'),
-                  $newFilename
-              );
-
+            $imageFile->move(
+                $this->getParameter('images_directory'),
+                $newFilename
+            );
               $message->setImage('uploads/images/' . $newFilename);
           }else {
             // Pas d'image uploadée => image par défaut
               $message->setImage('uploads/images/image-default.jpg');
+
         }
 
-          $manager->persist($message);
-          $manager->flush();
+        $manager->persist($message);
+        $manager->flush();
 
-          return $this->redirectToRoute('default_home');
-      }
+        return $this->redirectToRoute('default_home');
+    }
 
-      return $this->render('CRUD/createmessage.html.twig', [
-          'form' => $form->createView(),
-      ]);
-  }
+    return $this->render('CRUD/createmessage.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 
   #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
   public function message(
@@ -117,9 +117,10 @@ class MessagesController extends AbstractController
             'message' => $message,
         ]);
     }
-     #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
+    #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
     public function delete(Messages $message, EntityManagerInterface $manager): Response
     {
+        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
         if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }

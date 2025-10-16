@@ -1,10 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Modifier le Commentaires</h1>
+<div class="max-w-2xl mx-auto mt-12 p-8 bg-white dark:bg-darkBg rounded-2xl shadow-md border-2 border-primaryBlue dark:border-primaryGreen">
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-success">Enregistrer</button>
+    <h1 class="text-3xl font-bold text-primaryBlue dark:text-primaryGreen mb-6 text-center">
+        Modifier le commentaire
+    </h1>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-4 bg-white dark:bg-darkBg p-4 rounded-xl border border-gray-300 dark:border-gray-700'}}) }}
+
+        {{ form_widget(form, {'attr': {'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-darkBg text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primaryBlue dark:focus:ring-primaryGreen focus:border-transparent'}}) }}
+
+        <button type="submit" class="w-full py-2 mt-4 bg-primaryBlue dark:bg-primaryGreen text-white font-bold rounded-xl shadow-md hover:opacity-90 transition">
+            Enregistrer
+        </button>
+
     {{ form_end(form) }}
+</div>
 {% endblock %}
