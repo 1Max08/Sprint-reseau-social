@@ -39,7 +39,10 @@ class MessagesController extends AbstractController
               );
 
               $message->setImage('uploads/images/' . $newFilename);
-          }
+          }else {
+            // Pas d'image uploadée => image par défaut
+              $message->setImage('uploads/images/image-default.jpg');
+        }
 
           $manager->persist($message);
           $manager->flush();
