@@ -16,41 +16,41 @@ class MessagesController extends AbstractController
 {
 
     #[Route('/createmessage', name: 'messages_create')]
-  public function create(Request $request, EntityManagerInterface $manager): Response
-  {
-      $message = new Messages();
-      $message->setAuthor($this->getUser());
+public function create(Request $request, EntityManagerInterface $manager): Response
+{
+    $message = new Messages();
+    $message->setAuthor($this->getUser());
 
-      $form = $this->createForm(CreateMessageType::class, $message);
-      $form->handleRequest($request);
+    $form = $this->createForm(CreateMessageType::class, $message);
+    $form->handleRequest($request);
 
-      if ($form->isSubmitted() && $form->isValid()) {
+    if ($form->isSubmitted() && $form->isValid()) {
 
-          $imageFile = $form->get('image')->getData();
+        $imageFile = $form->get('image')->getData();
 
-          if ($imageFile) {
-              $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-              $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
-              $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalFilename);
+            $newFilename = $safeFilename . '-' . time() . '.' . $imageFile->guessExtension();
 
-              $imageFile->move(
-                  $this->getParameter('images_directory'),
-                  $newFilename
-              );
+            $imageFile->move(
+                $this->getParameter('images_directory'),
+                $newFilename
+            );
 
-              $message->setImage('uploads/images/' . $newFilename);
-          }
+            $message->setImage('uploads/images/' . $newFilename);
+        }
 
-          $manager->persist($message);
-          $manager->flush();
+        $manager->persist($message);
+        $manager->flush();
 
-          return $this->redirectToRoute('default_home');
-      }
+        return $this->redirectToRoute('default_home');
+    }
 
-      return $this->render('CRUD/createmessage.html.twig', [
-          'form' => $form->createView(),
-      ]);
-  }
+    return $this->render('CRUD/createmessage.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 
     #[Route('/message/{id}', name: 'messages_message', methods: ['GET'])]
 public function message(int $id, MessagesRepository $messagesRepository, Security $security): Response
@@ -69,5 +69,42 @@ public function message(int $id, MessagesRepository $messagesRepository, Securit
         'message' => $message,
     ]);
 }
+    #[Route('/message/update/{id}', name: 'message_update', methods: ['GET', 'POST'])]
+    public function update(Request $request, Messages $message, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas la permission de modifier ce message.');
+        }
+
+        $form = $this->createForm(CreateMessageType::class, $message);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('messages_message', ['id' => $message->getId()]);
+        }
+
+        return $this->render('CRUD/message_update.html.twig', [
+            'form' => $form->createView(),
+            'message' => $message,
+        ]);
+    }
+    #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
+    public function delete(Messages $message, EntityManagerInterface $manager): Response
+    {
+        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
+        if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
+        }
+
+        $manager->remove($message);
+        $manager->flush();
+
+        $this->addFlash('success', 'Message supprimé avec succès.');
+
+        return $this->redirectToRoute('default_home');
+    }
+
 
 }
