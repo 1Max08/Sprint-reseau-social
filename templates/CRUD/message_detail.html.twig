@@ -57,11 +57,13 @@
 
     {% if message.comment|length > 0 %}
         <div class="space-y-4">
+
             {% for comment in message.comment %}
                 <div class="border border-gray-300 dark:border-gray-700 rounded-xl p-4 
                             bg-white dark:bg-gray-900 relative">
                     <p class="text-gray-800 dark:text-gray-200">{{ comment.content }}</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
+
                         Par {{ comment.author.email }} le {{ comment.createdAt|date('d/m/Y à H:i') }}
                     </p>
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5082b612939eb9b67dc085bac48d0d4b",
+    "content-hash": "afb32643f62b48b3c938fea5cc4ded85",
     "packages": [
         {
             "name": "composer/semver",
@@ -7778,8 +7778,6 @@
     ],
     "packages-dev": [
         {
-<<<<<<< HEAD
-=======
             "name": "doctrine/data-fixtures",
             "version": "2.1.0",
             "source": {
@@ -7949,7 +7947,6 @@
             "time": "2025-10-12T16:50:54+00:00"
         },
         {
->>>>>>> 3be32f5762ac7e1593827ada2836879cfbc69c96
             "name": "masterminds/html5",
             "version": "2.10.0",
             "source": {

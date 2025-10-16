@@ -37,11 +37,11 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
                 $this->getParameter('images_directory'),
                 $newFilename
             );
-
-            $message->setImage('uploads/images/' . $newFilename);
-        }else {
+              $message->setImage('uploads/images/' . $newFilename);
+          }else {
             // Pas d'image uploadée => image par défaut
-            $message->setImage('uploads/images/image-default.jpg');
+              $message->setImage('uploads/images/image-default.jpg');
+
         }
 
         $manager->persist($message);
@@ -55,8 +55,8 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
     ]);
 }
 
-#[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
-public function message(
+  #[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
+  public function message(
     int $id,
     MessagesRepository $messagesRepository,
     Security $security,
@@ -120,6 +120,7 @@ public function message(
     #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
     public function delete(Messages $message, EntityManagerInterface $manager): Response
     {
+        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
         if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }
