@@ -15,6 +15,7 @@ services:
     environment:
       - MAILHOG_HOST=mailhog
       - MAILHOG_PORT=1025
+      - MAILER_DSN=smtp://mailhog:1025
     networks:
       - app-network
 
