@@ -29,7 +29,6 @@
         {% endfor %}
     {% endfor %}
 
-    {# --- Comment form --- #}
     <h2 class="text-2xl font-semibold text-primaryBlue mb-4">Laisser un commentaire</h2>
 
     <form method="post">
@@ -54,10 +53,7 @@
                         Par {{ comment.author.email }} le {{ comment.createdAt|date('d/m/Y à H:i') }}
                     </p>
 
-                    {# --- Edit/Delete buttons for comment author, OP, or admin --- #}
-                    {% if is_granted('ROLE_ADMIN') 
-                          or comment.author == app.user 
-                          or comment.message.author == app.user %}
+                    {% if is_granted('ROLE_ADMIN') or comment.author == app.user %}
                         <div class="absolute top-2 right-2 space-x-2">
                             <a href="{{ path('comment_edit', {'id': comment.id}) }}" class="text-blue-500 hover:underline">Modifier</a>
 
@@ -73,13 +69,11 @@
         <p class="text-gray-500 italic">Aucun commentaire pour l’instant.</p>
     {% endif %}
 
-    {# --- Return link --- #}
     <a href="{{ path('default_home') }}"
        class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
         ⬅ Retour à la liste
     </a>
 
-    {# --- Message-level Edit/Delete for admins or message author --- #}
     {% if is_granted('ROLE_ADMIN') or message.author == app.user %}
         <div class="mt-4">
             <a href="{{ path('message_update', {'id': message.id}) }}" class="inline-block mt-6 py-2 px-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">Modifier</a>

@@ -117,6 +117,7 @@ class MessagesController extends AbstractController
      #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
     public function delete(Messages $message, EntityManagerInterface $manager): Response
     {
+        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
         if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }
