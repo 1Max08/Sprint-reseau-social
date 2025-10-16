@@ -4,6 +4,9 @@
         <a href="{{ path('default_home') }}" class="text-white font-bold text-xl">
             Mini Réseau-Social
         </a>
+        <button id="theme-pc" class="bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-1 rounded text-xs">
+        🌗
+        </button>
 
         <!-- Bouton burger -->
         <button id="menu-btn"
@@ -29,10 +32,6 @@
                 <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold transition">Connexion</a>
             {% endif %}
 
-            <button id="theme-pc"
-                    class="bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-1 rounded text-xs">
-                🌗
-            </button>
         </div>
     </div>
 
@@ -47,10 +46,5 @@
             <a href="{{ path('app_register') }}" class="text-white hover:text-primaryGreen font-semibold">Inscription</a>
             <a href="{{ path('app_login') }}" class="text-white hover:text-primaryGreen font-semibold">Connexion</a>
         {% endif %}
-
-        <button id="theme-mobile"
-                class="bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded text-sm">
-            🌗
-        </button>
     </div>
 </nav>
