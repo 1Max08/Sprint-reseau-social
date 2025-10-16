@@ -55,9 +55,9 @@
         Commentaires
     </h2>
 
-    {% if message.comments|length > 0 %}
+    {% if message.comment|length > 0 %}
         <div class="space-y-4">
-            {% for comment in message.comments %}
+            {% for comment in message.comment %}
                 <div class="border border-gray-300 dark:border-gray-700 rounded-xl p-4 
                             bg-white dark:bg-gray-900 relative">
                     <p class="text-gray-800 dark:text-gray-200">{{ comment.content }}</p>

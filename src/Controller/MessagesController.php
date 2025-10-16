@@ -39,6 +39,9 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
             );
 
             $message->setImage('uploads/images/' . $newFilename);
+        }else {
+            // Pas d'image uploadée => image par défaut
+            $message->setImage('uploads/images/image-default.jpg');
         }
 
         $manager->persist($message);
@@ -52,23 +55,47 @@ public function create(Request $request, EntityManagerInterface $manager): Respo
     ]);
 }
 
-    #[Route('/message/{id}', name: 'messages_message', methods: ['GET'])]
-public function message(int $id, MessagesRepository $messagesRepository, Security $security): Response
-{
-    if (!$security->getUser()) {
-        return $this->redirectToRoute('app_register');
-    }
-
-    $message = $messagesRepository->find($id);
-
-    if (!$message) {
-        throw $this->createNotFoundException('Message introuvable');
-    }
+#[Route('/message/{id}', name: 'messages_message', methods: ['GET', 'POST'])]
+public function message(
+    int $id,
+    MessagesRepository $messagesRepository,
+    Security $security,
+    Request $request,
+    EntityManagerInterface $entityManager
+    ): Response
+    {
+        if (!$security->getUser()) {
+            return $this->redirectToRoute('app_register');
+        }
+        $message = $messagesRepository->find($id);
+        if (!$message) {
+            throw $this->createNotFoundException('Message introuvable');
+        }
+        
+        if ($request->isMethod('POST')) {
+            $content = trim($request->request->get('comment'));
+            
+            if ($content) {
+                $comment = new \App\Entity\Comment();
+                $comment->setContent($content);
+                $comment->setAuthor($this->getUser());
+                $comment->setMessage($message);
+                $entityManager->persist($comment);
+                $entityManager->flush();
+                
+                $this->addFlash('success', 'Commentaire publié avec succès.');
+                return $this->redirectToRoute('messages_message', ['id' => $id]);
+            }
+            else {
+                $this->addFlash('error', 'Le commentaire ne peut pas être vide.');
+            }
+        }
 
     return $this->render('CRUD/message_detail.html.twig', [
         'message' => $message,
     ]);
 }
+
     #[Route('/message/update/{id}', name: 'message_update', methods: ['GET', 'POST'])]
     public function update(Request $request, Messages $message, EntityManagerInterface $entityManager): Response
     {
@@ -93,7 +120,6 @@ public function message(int $id, MessagesRepository $messagesRepository, Securit
     #[Route('/message/delete/{id}', name: 'message_delete', methods: ['POST'])]
     public function delete(Messages $message, EntityManagerInterface $manager): Response
     {
-        // Vérifie que l'utilisateur peut supprimer (admin ou auteur)
         if (!$this->isGranted('ROLE_ADMIN') && $message->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }
