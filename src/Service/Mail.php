@@ -53,30 +53,36 @@ class Mail
 
     public function notifyNewComment(Comment $comment): void
     {
-        $users = $this->userRepository->findAll();
+        $message = $comment->getMessage();
+        if (!$message) {
+            return;
+        }
 
-        foreach ($users as $user) {
-            $emailAddress = $user->getEmail();
-            if (!$emailAddress) {
-                continue;
-            }
+        $author = $message->getAuthor();
+        if (!$author) {
+            return;
+        }
 
-            $email = (new Email())
-                ->from('no-reply@example.com')
-                ->to($emailAddress)
-                ->subject('Nouveau commentaire publié')
-                ->html(
-                    $this->twig->render('email/comment_notification.html.twig', [
-                        'comment' => $comment,
-                        'user' => $user,
-                    ])
-                );
+        $commentAuthor = $comment->getAuthor();
+        if ($commentAuthor && $author->getId() === $commentAuthor->getId()) {
+            return;
+        }
 
-            try {
-                $this->mailer->send($email);
-            } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-                error_log('Mailer failed for user ' . $user->getId() . ': ' . $e->getMessage());
-            }
+        $recipient = $author->getEmail();
+        if (!$recipient) {
+            return;
+        }
+
+        $email = (new Email())
+            ->from('no-reply@example.com')
+            ->to($recipient)
+            ->subject('Nouveau commentaire sur votre message')
+            ->text(sprintf("%s a commenté votre message :\n\n%s", $commentAuthor?->getEmail(), $comment->getContent()));
+
+        try {
+            $this->mailer->send($email);
+        } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
+            error_log('notifyNewComment: mailer error when sending to ' . $recipient . ': ' . $e->getMessage());
         }
     }
 }

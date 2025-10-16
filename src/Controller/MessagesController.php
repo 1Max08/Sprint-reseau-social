@@ -7,7 +7,6 @@ use App\Entity\Comment;
 use App\Form\CreateMessageType;
 use App\Repository\MessagesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +29,7 @@ class MessagesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'image
+            
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
@@ -45,14 +44,13 @@ class MessagesController extends AbstractController
 
                 $message->setImage('uploads/images/' . $newFilename);
             } else {
-                // Image par défaut si aucune n'est uploadée
+                
                 $message->setImage('uploads/images/image-default.jpg');
             }
 
             $manager->persist($message);
             $manager->flush();
 
-            // Envoi d’une notification (si le service Mail existe)
             if (class_exists(Mail::class)) {
                 $mail->notifyNewMessage($message);
             }
@@ -73,7 +71,8 @@ class MessagesController extends AbstractController
         MessagesRepository $messagesRepository,
         Security $security,
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        Mail $mail
     ): Response {
         if (!$security->getUser()) {
             return $this->redirectToRoute('app_register');
@@ -94,6 +93,11 @@ class MessagesController extends AbstractController
                 $comment->setMessage($message);
                 $entityManager->persist($comment);
                 $entityManager->flush();
+
+                // Notify the author of the message about the new comment
+                if (class_exists(Mail::class)) {
+                    $mail->notifyNewComment($comment);
+                }
 
                 $this->addFlash('success', 'Commentaire publié avec succès.');
                 return $this->redirectToRoute('messages_message', ['id' => $id]);

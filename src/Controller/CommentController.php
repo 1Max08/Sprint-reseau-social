@@ -44,8 +44,9 @@ class CommentController extends AbstractController
         $manager->persist($comment);
         $manager->flush();
 
-        // 🔔 Send email notification
+        if (class_exists(Mail::class)) {
         $mail->notifyNewComment($comment);
+        }
 
         $this->addFlash('success', 'Commentaire publié avec succès et notification envoyée.');
 
@@ -55,7 +56,7 @@ class CommentController extends AbstractController
     #[Route('/comment/edit/{id}', name: 'comment_edit', methods: ['GET', 'POST'])]
     public function edit(Comment $comment, Request $request, EntityManagerInterface $manager): Response
     {
-        // Only the author or admin can edit
+     
         if (!$this->isGranted('ROLE_ADMIN') && $comment->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier ce commentaire.');
         }
@@ -78,7 +79,7 @@ class CommentController extends AbstractController
     #[Route('/comment/delete/{id}', name: 'comment_delete', methods: ['POST'])]
     public function delete(Comment $comment, EntityManagerInterface $manager): Response
     {
-        // Only the author or admin can delete
+      
         if (!$this->isGranted('ROLE_ADMIN') && $comment->getAuthor() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce commentaire.');
         }
