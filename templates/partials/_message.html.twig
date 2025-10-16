@@ -3,7 +3,10 @@
         <div class="container">
             <div class="row">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body dark:text-white">
+                        {% if message.image %}
+                            <img src="{{ asset(message.image) }}" alt="Image du message" class="rounded-xl shadow mb-4">
+                        {% endif %}
                         <h5 class="card-title">{{ message.content }}</h5>
                         <small class="text-muted">
                             {% if app.user %}
@@ -11,7 +14,9 @@
                             {% endif %}
                             le {{ message.createdAt | date('d/m/Y') }}
                         </small>
-                        <a href="{{ path('messages_message', {'id': message.id}) }}">Voir le message</a>
+                        <a href="{{ path('messages_message', {'id': message.id}) }}" class="mt-4 w-full block text-center py-2 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
+                            Voir plus
+                        </a>
 
                     </div>
                 </div>
