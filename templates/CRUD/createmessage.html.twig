@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-{% extends 'base.html.twig' %}
-
-{% block title %}Créer un message{% endblock %}
-
-{% block body %}
-<div class="max-w-md mx-auto mt-12 p-8 bg-white rounded-2xl shadow-md border-2 border-primaryBlue">
-    <h1 class="text-4xl font-extrabold text-primaryBlue mb-6 text-center tracking-tight">
-        Nouveau message
-    </h1>
-
-    {{ form_start(form, {'attr': {'class': 'space-y-4', 'enctype': 'multipart/form-data'}}) }}
-
-        {# Champ du contenu du message (textarea) #}
-        <div>
-            {{ form_label(form.content, 'Contenu', {'label_attr': {'class': 'block text-gray-900 font-bold mb-1'}}) }}
-            {{ form_widget(form.content, {
-                'attr': {
-                    'class': 'w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-primaryBlue focus:border-transparent bg-white text-gray-900',
-                    'placeholder': 'Entrez le contenu du message...'
-                }
-            }) }}
-            {{ form_errors(form.content) }}
-        </div>
-
-        {# Champ de l’image (input file) #}
-        <div>
-            {{ form_label(form.image, 'Image (optionnelle)', {'label_attr': {'class': 'block text-gray-900 font-bold mb-1'}}) }}
-            {{ form_widget(form.image, {
-                'attr': {
-                    'class': 'w-full px-4 py-2 border rounded-xl shadow-sm bg-white text-gray-900 focus:ring-2 focus:ring-primaryBlue focus:border-transparent'
-                }
-            }) }}
-            {{ form_errors(form.image) }}
-        </div>
-
-        {# Bouton envoyer en bas #}
-        <button type="submit" class="w-full py-2 mt-4 bg-primaryBlue text-white font-bold rounded-xl shadow-md hover:bg-primaryGreen transition">
-            Publier le message
-        </button>
-
-    {{ form_end(form) }}
-</div>
-{% endblock %}
-=======
 {% extends 'base.html.twig' %}
 
 {% block title %}Créer un message{% endblock %}
@@ -87,4 +42,3 @@
     {{ form_end(form) }}
 </div>
 {% endblock %}
->>>>>>> 2f94143758b22c2fb7fbfcf2cba48317fe86726e
